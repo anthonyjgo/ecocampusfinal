@@ -13,19 +13,12 @@ Gráfico de reportes agrupados por estado.
 Gráfico de tipos de problemas ambientales reportados.
 Gestión global de incidentes: cambiar el estado de cada reporte (Pendiente / En proceso / Solucionado) y agregar comentarios para el estudiante.
 Tecnologías
-HTML5, CSS3, JavaScript
-(Actualiza esta sección si usas algún framework, librería de gráficos, o backend específico)
+HTML5, JavaScript
+
 Estructura del proyecto
 ecocampus/
 ├── index.html
-├── css/
 ├── js/
 └── assets/
 
-Ajusta esta estructura según cómo estén organizados realmente tus archivos.
-
-Cómo ejecutarlo localmente
-Clona el repositorio:
-bash
-   git clone https://github.com/TU-USUARIO/ecocampus.git
 
