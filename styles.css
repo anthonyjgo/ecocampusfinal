@@ -1,0 +1,26 @@
+/*
+    EcoCampus
+    Estilos personalizados
+
+    La mayor parte del diseño utiliza Tailwind CSS.
+*/
+
+html {
+    scroll-behavior: smooth;
+}
+
+/*
+    Permite que los modales puedan desplazarse
+    correctamente en pantallas pequeñas.
+*/
+#modal-report,
+#modal-admin-edit {
+    overflow-y: auto;
+}
+
+/*
+    Ajustes para los canvas de Chart.js.
+*/
+canvas {
+    max-width: 100%;
+}

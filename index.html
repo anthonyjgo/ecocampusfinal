@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoCampus - Plataforma Ambientalista</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js para Estadísticas Dinámicas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Configuración de Tailwind -->
+    <script src="js/tailwind.config.js"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- ==========================================
+         NAVEGACIÓN SUPERIOR
+    =========================================== -->
+    <nav class="bg-brand-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+            <div
+                class="flex items-center space-x-3 cursor-pointer"
+                onclick="handleNavHome()"
+            >
+                <i class="ph-bold ph-plant text-2xl text-brand-100"></i>
+
+                <span class="font-bold text-xl tracking-wide">
+                    EcoCampus
+                </span>
+            </div>
+
+            <!-- Estado de sesión -->
+            <div
+                id="navUserSection"
+                class="hidden flex items-center space-x-4"
+            >
+
+                <span
+                    id="navUserInfo"
+                    class="text-sm bg-brand-900/40 px-3 py-1 rounded-full border border-brand-500/30"
+                ></span>
+
+                <button
+                    onclick="router('profile')"
+                    class="hover:text-brand-100 flex items-center space-x-1 text-sm font-medium transition"
+                >
+                    <i class="ph-bold ph-user-circle text-lg"></i>
+                    <span>Perfil</span>
+                </button>
+
+                <button
+                    onclick="logout()"
+                    class="bg-red-500/20 hover:bg-red-500/30 text-red-100 text-xs px-3 py-1.5 rounded-lg border border-red-400/30 transition"
+                >
+                    Cerrar Sesión
+                </button>
+
+            </div>
+
+        </div>
+    </nav>
+
+
+    <!-- ==========================================
+         ALERTAS
+    =========================================== -->
+    <div
+        id="alertContainer"
+        class="max-w-md mx-auto mt-4 px-4 fixed top-16 right-4 z-50"
+    ></div>
+
+
+    <!-- ==========================================
+         CONTENIDO PRINCIPAL
+    =========================================== -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+
+        <!-- ==========================================
+             VISTA DE AUTENTICACIÓN
+        =========================================== -->
+        <section
+            id="view-auth"
+            class="max-w-md mx-auto my-8"
+        >
+
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
+
+                <!-- Encabezado -->
+                <div class="text-center mb-8">
+
+                    <div class="inline-flex p-3 bg-brand-50 rounded-full text-brand-600 mb-3">
+                        <i class="ph-bold ph-leaf text-3xl"></i>
+                    </div>
+
+                    <h1 class="text-2xl font-bold text-slate-900">
+                        Bienvenido a EcoCampus
+                    </h1>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Plataforma de reporte y seguimiento ambiental
+                    </p>
+
+                </div>
+
+
+                <!-- Tabs -->
+                <div class="flex border-b border-slate-200 mb-6">
+
+                    <button
+                        onclick="switchAuthTab('login-student')"
+                        id="tab-login-student"
+                        class="auth-tab flex-1 py-2 text-xs font-semibold text-center border-b-2 border-brand-600 text-brand-600"
+                    >
+                        Estudiante
+                    </button>
+
+                    <button
+                        onclick="switchAuthTab('login-admin')"
+                        id="tab-login-admin"
+                        class="auth-tab flex-1 py-2 text-xs font-semibold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-600"
+                    >
+                        Administrador
+                    </button>
+
+                    <button
+                        onclick="switchAuthTab('register')"
+                        id="tab-register"
+                        class="auth-tab flex-1 py-2 text-xs font-semibold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-600"
+                    >
+                        Registro
+                    </button>
+
+                </div>
+
+
+                <!-- ==========================================
+                     LOGIN ESTUDIANTE
+                =========================================== -->
+                <form
+                    id="form-login-student"
+                    onsubmit="handleLogin(event, 'estudiante')"
+                    class="auth-form space-y-4"
+                >
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Correo Institucional / Usuario
+                        </label>
+
+                        <input
+                            type="text"
+                            id="loginStudentUser"
+                            required
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="estudiante@campus.edu"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="loginStudentPass"
+                            required
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="••••••••"
+                        >
+                    </div>
+
+                    <div class="text-right">
+                        <button
+                            type="button"
+                            onclick="switchAuthTab('forgot')"
+                            class="text-xs text-brand-600 hover:underline"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-md shadow-brand-600/20"
+                    >
+                        Ingresar a Mi Panel
+                    </button>
+
+                </form>
+
+
+                <!-- ==========================================
+                     LOGIN ADMINISTRADOR
+                =========================================== -->
+                <form
+                    id="form-login-admin"
+                    onsubmit="handleLogin(event, 'admin')"
+                    class="auth-form space-y-4 hidden"
+                >
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Usuario Administrador
+                        </label>
+
+                        <input
+                            type="text"
+                            id="loginAdminUser"
+                            required
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="admin@campus.edu"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="loginAdminPass"
+                            required
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="••••••••"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-lg text-sm transition"
+                    >
+                        Ingresar como Administrador
+                    </button>
+
+                </form>
+
+
+                <!-- ==========================================
+                     REGISTRO
+                =========================================== -->
+                <form
+                    id="form-register"
+                    onsubmit="handleRegister(event)"
+                    class="auth-form space-y-4 hidden"
+                >
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Nombre Completo *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="regName"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="Ej: Maria Lopez"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Correo Institucional *
+                        </label>
+
+                        <input
+                            type="email"
+                            id="regEmail"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="usuario@campus.edu"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Contraseña *
+                        </label>
+
+                        <input
+                            type="password"
+                            id="regPass"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="••••••••"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition"
+                    >
+                        Completar Registro
+                    </button>
+
+                </form>
+
+
+                <!-- ==========================================
+                     RECUPERAR CONTRASEÑA
+                =========================================== -->
+                <form
+                    id="form-forgot"
+                    onsubmit="handleForgot(event)"
+                    class="auth-form space-y-4 hidden"
+                >
+
+                    <p class="text-xs text-slate-500">
+                        Ingresa tu correo institucional registrado para recuperar tu cuenta.
+                    </p>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Correo Institucional *
+                        </label>
+
+                        <input
+                            type="email"
+                            id="forgotEmail"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                            placeholder="usuario@campus.edu"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg text-sm transition"
+                    >
+                        Enviar Enlace de Restauración
+                    </button>
+
+                    <div class="text-center">
+                        <button
+                            type="button"
+                            onclick="switchAuthTab('login-student')"
+                            class="text-xs text-slate-500 hover:underline"
+                        >
+                            Volver
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================================
+             VISTA ESTUDIANTE
+        =========================================== -->
+        <section
+            id="view-student"
+            class="hidden space-y-6"
+        >
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">
+                        Panel del Estudiante
+                    </h2>
+
+                    <p class="text-sm text-slate-500">
+                        Consulta tus reportes e informa nuevas eventualidades ambientales.
+                    </p>
+                </div>
+
+                <button
+                    onclick="toggleModal('modal-report', true)"
+                    class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center space-x-2 transition shadow-md shadow-brand-600/20"
+                >
+                    <i class="ph-bold ph-plus"></i>
+                    <span>Reportar Problema Ambiental</span>
+                </button>
+
+            </div>
+
+
+            <!-- Reportes del estudiante -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+                <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+
+                    <div>
+                        <h3 class="font-bold text-slate-800">
+                            Historial e Información de Mis Reportes
+                        </h3>
+
+                        <p class="text-xs text-slate-400">
+                            Sólo tú puedes consultar tus reportes y sus observaciones.
+                        </p>
+                    </div>
+
+                    <span
+                        id="studentReportCount"
+                        class="text-xs bg-brand-50 text-brand-700 font-bold px-3 py-1 rounded-full"
+                    >
+                        0 reportes
+                    </span>
+
+                </div>
+
+                <div
+                    id="studentReportsList"
+                    class="divide-y divide-slate-100"
+                >
+                    <!-- Contenido dinámico -->
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================================
+             VISTA ADMINISTRADOR
+        =========================================== -->
+        <section
+            id="view-admin"
+            class="hidden space-y-8"
+        >
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+
+                <h2 class="text-2xl font-bold text-slate-900">
+                    Panel de Administración General
+                </h2>
+
+                <p class="text-sm text-slate-500">
+                    Supervisión, gestión de solicitudes y métricas en tiempo real.
+                </p>
+
+            </div>
+
+
+            <!-- ==========================================
+                 DASHBOARD
+            =========================================== -->
+            <div class="space-y-4">
+
+                <div class="flex items-center space-x-2">
+
+                    <i class="ph-bold ph-chart-bar text-brand-600 text-xl"></i>
+
+                    <h3 class="font-bold text-lg text-slate-800">
+                        Estadísticas y Métricas Generales
+                    </h3>
+
+                </div>
+
+
+                <!-- Tarjetas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                    <!-- Total -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
+
+                        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                            <i class="ph-bold ph-files text-2xl"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase">
+                                Total Reportes
+                            </p>
+
+                            <h4
+                                id="statTotal"
+                                class="text-2xl font-extrabold text-slate-800"
+                            >
+                                0
+                            </h4>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Pendientes -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
+
+                        <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                            <i class="ph-bold ph-clock text-2xl"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase">
+                                Pendientes
+                            </p>
+
+                            <h4
+                                id="statPending"
+                                class="text-2xl font-extrabold text-slate-800"
+                            >
+                                0
+                            </h4>
+                        </div>
+
+                    </div>
+
+
+                    <!-- En proceso -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
+
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                            <i class="ph-bold ph-gear text-2xl"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase">
+                                En Proceso
+                            </p>
+
+                            <h4
+                                id="statInProcess"
+                                class="text-2xl font-extrabold text-slate-800"
+                            >
+                                0
+                            </h4>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Solucionados -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
+
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <i class="ph-bold ph-check-circle text-2xl"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase">
+                                Solucionados
+                            </p>
+
+                            <h4
+                                id="statSolved"
+                                class="text-2xl font-extrabold text-slate-800"
+                            >
+                                0
+                            </h4>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Gráficos -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-4">
+                            Reportes Agrupados por Estado
+                        </h4>
+
+                        <div class="h-64 relative">
+                            <canvas id="chartStatus"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-4">
+                            Tipos de Problemas Ambientales Reportados
+                        </h4>
+
+                        <div class="h-64 relative">
+                            <canvas id="chartTypes"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================================
+                 GESTIÓN DE REPORTES
+            =========================================== -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+                <div class="p-4 sm:p-6 border-b border-slate-100">
+
+                    <h3 class="font-bold text-slate-800">
+                        Gestión Global de Incidentes
+                    </h3>
+
+                </div>
+
+                <div
+                    id="adminReportsList"
+                    class="divide-y divide-slate-100"
+                >
+                    <!-- Dinámico -->
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================================
+             VISTA PERFIL
+        =========================================== -->
+        <section
+            id="view-profile"
+            class="hidden max-w-lg mx-auto"
+        >
+
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 space-y-6">
+
+                <div class="flex items-center space-x-4 border-b border-slate-100 pb-6">
+
+                    <div
+                        id="profileAvatar"
+                        class="w-16 h-16 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xl border-2 border-brand-500"
+                    >
+                        --
+                    </div>
+
+                    <div>
+
+                        <h2
+                            id="profileDisplayName"
+                            class="text-xl font-bold text-slate-900"
+                        >
+                            Usuario
+                        </h2>
+
+                        <p
+                            id="profileDisplayRole"
+                            class="text-xs text-slate-500 capitalize"
+                        >
+                            Rol
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    onsubmit="handleUpdateProfile(event)"
+                    class="space-y-4"
+                >
+
+                    <div>
+
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Nombre Completo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="profileName"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Nueva Contraseña (dejar en blanco para conservar)
+                        </label>
+
+                        <input
+                            type="password"
+                            id="profilePass"
+                            placeholder="••••••••"
+                            class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                        >
+
+                    </div>
+
+
+                    <div class="flex space-x-3 pt-2">
+
+                        <button
+                            type="submit"
+                            class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg text-sm transition"
+                        >
+                            Guardar Cambios
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="router(currentUser.role)"
+                            class="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg text-sm transition"
+                        >
+                            Cancelar
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==========================================
+         MODAL CREAR REPORTE
+    =========================================== -->
+    <div
+        id="modal-report"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4"
+    >
+
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+
+            <div class="flex justify-between items-center border-b pb-3">
+
+                <h3 class="font-bold text-lg text-slate-900">
+                    Registrar Reporte Ambiental
+                </h3>
+
+                <button
+                    onclick="toggleModal('modal-report', false)"
+                    class="text-slate-400 hover:text-slate-600"
+                >
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+
+            </div>
+
+
+            <form
+                onsubmit="handleCreateReport(event)"
+                class="space-y-4"
+            >
+
+                <div>
+
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">
+                        Tipo de Problema *
+                    </label>
+
+                    <select
+                        id="reportType"
+                        class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                        <option value="">Seleccione una opción...</option>
+                        <option value="Residuos / Basura">Residuos / Basura</option>
+                        <option value="Fuga de Agua">Fuga de Agua</option>
+                        <option value="Daño a Flora/Fauna">Daño a Flora / Fauna</option>
+                        <option value="Contaminación Auditiva">Contaminación Auditiva</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">
+                        Ubicación del Problema *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reportLocation"
+                        class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                        placeholder="Ej: Edificio Central, Laboratorio 202"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">
+                        Descripción Detallada *
+                    </label>
+
+                    <textarea
+                        id="reportDesc"
+                        rows="3"
+                        class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                        placeholder="Describe brevemente el problema observado..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="flex justify-end space-x-2 pt-2">
+
+                    <button
+                        type="button"
+                        onclick="toggleModal('modal-report', false)"
+                        class="px-4 py-2 border rounded-lg text-sm text-slate-600 hover:bg-slate-50"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium"
+                    >
+                        Enviar Reporte
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         MODAL ADMINISTRADOR
+    =========================================== -->
+    <div
+        id="modal-admin-edit"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4"
+    >
+
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+
+            <div class="flex justify-between items-center border-b pb-3">
+
+                <h3 class="font-bold text-lg text-slate-900">
+                    Actualizar Estado de Reporte
+                </h3>
+
+                <button
+                    onclick="toggleModal('modal-admin-edit', false)"
+                    class="text-slate-400 hover:text-slate-600"
+                >
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+
+            </div>
+
+
+            <form
+                onsubmit="handleUpdateReportStatus(event)"
+                class="space-y-4"
+            >
+
+                <input
+                    type="hidden"
+                    id="adminActiveReportId"
+                >
+
+
+                <div>
+
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">
+                        Nuevo Estado *
+                    </label>
+
+                    <select
+                        id="adminStatusSelect"
+                        class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En proceso">En proceso</option>
+                        <option value="Solucionado">Solucionado</option>
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">
+                        Agregar Comentario para el Estudiante
+                    </label>
+
+                    <textarea
+                        id="adminComment"
+                        rows="3"
+                        class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                        placeholder="Opcional: Detalla acciones o soluciones tomadas..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="flex justify-end space-x-2 pt-2">
+
+                    <button
+                        type="button"
+                        onclick="toggleModal('modal-admin-edit', false)"
+                        class="px-4 py-2 border rounded-lg text-sm text-slate-600 hover:bg-slate-50"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-medium"
+                    >
+                        Guardar Cambios
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+         ORDEN DE CARGA IMPORTANTE
+    =========================================== -->
+
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
